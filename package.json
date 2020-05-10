@@ -1,0 +1,35 @@
+{
+  "name": "poker",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape 'test/**/*.js' | faucet"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ktrain/poker.git"
+  },
+  "keywords": [
+    "poker",
+    "holdem"
+  ],
+  "author": "Kellen Steffen",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/ktrain/poker/issues"
+  },
+  "homepage": "https://github.com/ktrain/poker#readme",
+  "dependencies": {
+    "lodash": "^4.17.15",
+    "module-alias": "^2.2.2"
+  },
+  "devDependencies": {
+    "faucet": "^0.0.1",
+    "tape": "^5.0.0"
+  },
+  "_moduleAliases": {
+    "@lib": "./lib",
+    "@test": "./test"
+  }
+}

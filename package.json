@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "debug-test": "node inspect test/**/*.js",
-    "test": "tape 'test/**/*.js' | faucet"
+    "debug-test": "node inspect test/**/test.*.js",
+    "test": "tape 'test/**/test.*.js' | faucet"
   },
   "repository": {
     "type": "git",

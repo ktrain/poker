@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "debug-test": "node inspect test/**/*.js",
     "test": "tape 'test/**/*.js' | faucet"
   },
   "repository": {

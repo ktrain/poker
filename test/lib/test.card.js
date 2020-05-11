@@ -1,4 +1,4 @@
-require('../init.js')
+require('../init')
 const _ = require('lodash')
 const test = require('tape')
 
@@ -8,19 +8,13 @@ const { Suit, Rank, Card } = require('@lib/card')
 test('card creation', function(t) {
     let card
 
-    // separate args
-    card = Card.create('9', 'c')
-    t.looseEqual(card.rank, 9)
-    t.equal(card.suit, 'c')
-    t.equal(card.toString(), '9c')
-
-    // array of args
+    // array args
     card = Card.create(['J', 's'])
     t.looseEqual(card.rank, 11)
     t.equal(card.suit, 's')
     t.equal(card.toString(), 'Js')
 
-    // single string arg
+    // string arg
     card = Card.create('Qh')
     t.looseEqual(card.rank, 12)
     t.equal(card.suit, 'h')
@@ -52,7 +46,7 @@ test('card sorting', function(t) {
     t.plan(1)
     let cards, ranks
 
-    cards = _.map(['2c', 'Ad', '4h', 'Ts', 'Qc'], (str) => Card.create(str))
+    cards = _.map(['2c', 'Ad', '4h', 'Ts', 'Qc'], Card.create)
     Card.sort(cards)
     ranks = _.map(cards, (card) => card.rank.valueOf())
     t.deepLooseEqual(ranks, [14, 12, 10, 4, 2])

@@ -61,13 +61,3 @@ test('Card comparison', function(t) {
     })
 
 })
-
-test('Card.sort()', function(t) {
-    t.plan(1)
-    let cards, ranks
-
-    cards = _.map(['2c', 'Ad', '4h', 'Ts', 'Qc'], Card.create)
-    Card.sort(cards)
-    ranks = _.map(cards, (card) => card.rank.valueOf())
-    t.deepLooseEqual(ranks, [14, 12, 10, 4, 2])
-})

@@ -8,6 +8,21 @@ const { Card, Rank } = require('@lib/card')
 const Hand = require('@lib/hand')
 
 
+test('Hand.sort()', function(t) {
+    t.plan(2)
+    let input, ranks, expectedResult
+
+    input = Hand.create(['2c', 'Ad', '4h', 'Ts', 'Qc'])
+    Hand.sort(input)
+    ranks = _.map(input, (card) => card.rank.valueOf())
+    t.deepLooseEqual(ranks, [14, 12, 10, 4, 2])
+
+    input = Hand.create(['2c', 'Ad', '2h', '2s', '2d'])
+    Hand.sort(input)
+    expectedResult = Hand.create(['Ad', '2s', '2h', '2c', '2d'])
+    t.assert(Helpers.sameHand(input, expectedResult))
+})
+
 test('Hand.contains()', function(t) {
     t.plan(3)
     const hand = Hand.create(['Ad', 'Ac'])

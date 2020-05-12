@@ -66,7 +66,7 @@ test('Hand.getMostCommonRank()', function(t) {
 })
 
 test('Hand.fill()', function(t) {
-    t.plan(5)
+    t.plan(6)
     let input, output, expectedOutput
 
     input = Hand.create(['Ac', 'Ad', 'Ah', 'Qs', 'Qc'])
@@ -77,17 +77,22 @@ test('Hand.fill()', function(t) {
     input = Hand.create(['Ac', 'Ad', 'Ah', 'As'])
     output = Hand.fill(input, Hand.create(['Ac', 'Ad', 'Ah', 'As', 'Ks', 'Qc', '2h']))
     expectedOutput = Hand.create(['Ac', 'Ad', 'Ah', 'As', 'Ks'])
-    t.assert(Helpers.sameHand(output, expectedOutput))
+    t.assert(Helpers.sameHand(output, expectedOutput), 'Fill 1 card')
 
     input = Hand.create(['Th', 'Ts', 'Td'])
     output = Hand.fill(input, Hand.create(['Ks', 'Qs', 'Th', 'Ts', 'Td', '7c', '2h']))
     expectedOutput = Hand.create(['Th', 'Ts', 'Td', 'Ks', 'Qs'])
-    t.assert(Helpers.sameHand(output, expectedOutput))
+    t.assert(Helpers.sameHand(output, expectedOutput), 'Fill 2 cards')
 
     input = Hand.create(['2h', '2c'])
     output = Hand.fill(input, Hand.create(['Ac', 'Td', '9h', '8c', '4s', '2h', '2c']))
     expectedOutput = Hand.create(['2h', '2c', 'Ac', 'Td', '9h'])
-    t.assert(Helpers.sameHand(output, expectedOutput))
+    t.assert(Helpers.sameHand(output, expectedOutput), 'Fill 3 cards')
+
+    input = Hand.create(['Ac'])
+    output = Hand.fill(input, Hand.create(['Ac', 'Td', '9h', '8c', '4s', '3h', '2c']))
+    expectedOutput = Hand.create(['Ac', 'Td', '9h', '8c', '4s'])
+    t.assert(Helpers.sameHand(output, expectedOutput), 'Fill 4 cards')
 
     input = Hand.create([])
     output = Hand.fill(input, Hand.create(['Ac', 'Td', '9h', '8c', '4s', '3h', '2c']))

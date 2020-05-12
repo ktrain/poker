@@ -1,63 +1,105 @@
 require('../init')
 const test = require('tape')
-const _ = require('lodash')
 
 const Helpers = require('@test/helpers')
 
-const { Card } = require('@lib/card')
-const { Evaluator } = require('@lib/hand')
+const { Card, Rank } = require('@lib/card')
+const Hand = require('@lib/hand')
 
 
-test('hand evaluation', function(t) {
+test('Hand.contains()', function(t) {
+    t.plan(3)
+    const hand = Hand.create(['Ad', 'Ac'])
 
-    t.test('flush', function(st) {
-        let input, output, expectedOutput
-        st.plan(3)
+    t.assert(Hand.contains(hand, Card.create('Ad')))
+    t.assert(!(Hand.contains(hand, Card.create('As'))))
+    t.assert(!(Hand.contains(hand, Card.create('Tc'))))
+})
 
-        // 5-card flush
-        input = _.map(['Tc', 'Jc', 'Qc', 'Kc', 'Ac'], Card.create)
-        output = Evaluator.getFlush(input)
-        expectedOutput = _.map(['Ac', 'Kc', 'Qc', 'Jc', 'Tc'], Card.create)
-        st.assert(Helpers.handEquals(output, expectedOutput), '5-card flush')
+test('Hand.tallyRanks()', function(t) {
+    t.plan(1)
+    const input = Hand.create(['As', 'Ac', 'Kd', 'Kh', 'Ks', '9d', '3c'])
+    const output = Hand.tallyRanks(input)
+    const expectedOutput = { 14: 2, 13: 3, 9: 1, 3: 1 }
+    t.deepEqual(output, expectedOutput)
+})
 
-        // 6-card flush; should take the 5 highest cards
-        input = _.map(['9c', '4h', 'Tc', 'Jc', 'Qc', 'Kc', 'Ac'], Card.create)
-        output = Evaluator.getFlush(input)
-        expectedOutput = _.map(['Ac', 'Kc', 'Qc', 'Jc', 'Tc'], Card.create)
-        st.assert(Helpers.handEquals(output, expectedOutput), '6-card flush')
+test('Hand.getMostCommonRank()', function(t) {
+    t.plan(4)
+    let input, output, expectedOutput
 
-        // no flush
-        input = _.map(['2c', 'Tc', 'Jc', 'Qc', 'Kh', 'Ah', 'Th'], Card.create)
-        output = Evaluator.getFlush(input)
-        st.equal(output, null, 'no flush')
-    })
+    input = Hand.create(['Tc', 'Td', 'Th', 'Ts'])
+    output = Hand.getMostCommonRank(input)
+    expectedOutput = Rank.create('T')
+    t.assert(Rank.same(output, expectedOutput), 'Four cards of the same rank')
 
-    t.test('straight', function(st) {
-        let input, output, expectedOutput
-        st.plan(4)
+    input = Hand.create(['Tc', 'Td', 'Th', 'Qc', '2d', 'Kh', 'Kc'])
+    output = Hand.getMostCommonRank(input)
+    expectedOutput = Rank.create('T')
+    t.assert(Rank.same(output, expectedOutput), 'Three cards of the same rank amongst others')
 
-        // 5-card straight
-        input = _.map(['Tc', 'Jd', 'Qh', 'Ks', 'Ac'], Card.create)
-        output = Evaluator.getStraight(input)
-        expectedOutput = _.map(['Ac', 'Ks', 'Qh', 'Jd', 'Tc'], Card.create)
-        st.assert(Helpers.handEquals(output, expectedOutput), '5-card straight')
+    input = Hand.create(['Tc', 'Td', 'Th', 'Ts', '9d', '9h', '9c', '9s'])
+    output = Hand.getMostCommonRank(input)
+    expectedOutput = Rank.create('T')
+    t.assert(Rank.same(output, expectedOutput), 'Pick the higher of two four-of-a-kinds')
 
-        // 6-card straight; should take the 5 highest cards
-        input = _.map(['4s', '5c', '6d', '7h', '8s', '9c'], Card.create)
-        output = Evaluator.getStraight(input)
-        expectedOutput = _.map(['9c', '8s', '7h', '6d', '5c'], Card.create)
-        st.assert(Helpers.handEquals(output, expectedOutput), '6-card straight')
+    input = Hand.create(['Ac', 'Td', '9c', '7s', '6c', '4c', '2c'])
+    output = Hand.getMostCommonRank(input)
+    expectedOutput = Rank.create('A')
+    t.assert(Rank.same(output, expectedOutput), 'Pick the highest in a hand with unique ranks')
+})
 
-        // 5-high straight
-        input = _.map(['Ks', 'Tc', 'Ad', '2h', '3s', '4c', '5d'], Card.create)
-        output = Evaluator.getStraight(input)
-        expectedOutput = _.map(['5d', '4c', '3s', '2h', 'Ad'], Card.create)
-        st.assert(Helpers.handEquals(output, expectedOutput), '5-high straight')
+test('Hand.getFlush()', function(t) {
+    t.plan(3)
+    let input, output, expectedOutput
 
-        // no straight
-        input = _.map(['2s', '3c', '4d', '5h', '7s', '9c', '8d'], Card.create)
-        output = Evaluator.getStraight(input)
-        st.equal(output, null, 'no straight')
-    })
+    // 5-card flush
+    input = Hand.create(['Tc', 'Jc', 'Qc', 'Kc', 'Ac'])
+    output = Hand.getFlush(input)
+    expectedOutput = Hand.create(['Ac', 'Kc', 'Qc', 'Jc', 'Tc'])
+    t.assert(Helpers.handEquals(output, expectedOutput), '5-card flush')
 
+    // 6-card flush; should take the 5 highest cards
+    input = Hand.create(['9c', '4h', 'Tc', 'Jc', 'Qc', 'Kc', 'Ac'])
+    output = Hand.getFlush(input)
+    expectedOutput = Hand.create(['Ac', 'Kc', 'Qc', 'Jc', 'Tc'])
+    t.assert(Helpers.handEquals(output, expectedOutput), '6-card flush')
+
+    // no flush
+    input = Hand.create(['2c', 'Tc', 'Jc', 'Qc', 'Kh', 'Ah', 'Th'])
+    output = Hand.getFlush(input)
+    t.equal(output, null, 'no flush')
+})
+
+test('Hand.getStraight()', function(t) {
+    t.plan(5)
+    let input, output, expectedOutput
+
+    // 5-card straight
+    input = Hand.create(['Tc', 'Jd', 'Qh', 'Ks', 'Ac'])
+    output = Hand.getStraight(input)
+    expectedOutput = Hand.create(['Ac', 'Ks', 'Qh', 'Jd', 'Tc'])
+    t.assert(Helpers.handEquals(output, expectedOutput), '5-card straight')
+
+    // 6-card straight; should take the 5 highest cards
+    input = Hand.create(['4s', '5c', '6d', '7h', '8s', '9c'])
+    output = Hand.getStraight(input)
+    expectedOutput = Hand.create(['9c', '8s', '7h', '6d', '5c'])
+    t.assert(Helpers.handEquals(output, expectedOutput), '6-card straight')
+
+    // 5-high straight
+    input = Hand.create(['Ks', 'Tc', 'Ad', '2h', '3s', '4c', '5d'])
+    output = Hand.getStraight(input)
+    expectedOutput = Hand.create(['5d', '4c', '3s', '2h', 'Ad'])
+    t.assert(Helpers.handEquals(output, expectedOutput), '5-high straight')
+
+    // no 4-high straight
+    input = Hand.create(['Ks', 'Ac', '2d', '3h', '4s'])
+    output = Hand.getStraight(input)
+    t.equal(output, null, 'no 4-high straight')
+
+    // no straight
+    input = Hand.create(['2s', '3c', '4d', '5h', '7s', '9c', '8d'])
+    output = Hand.getStraight(input)
+    t.equal(output, null, 'no straight')
 })

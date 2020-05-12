@@ -8,24 +8,6 @@ const { Card } = require('@lib/card')
 
 
 test('TestHelpers.handEquals', function(t) {
-    t.plan(4)
-
-    t.assert(Helpers.cardEquals(
-        Card.create('Qh'), Card.create('Qh')
-    ))
-    t.assert(!Helpers.cardEquals(
-        Card.create('Qh'), Card.create('Qc')
-    ))
-    t.assert(!Helpers.cardEquals(
-        Card.create('Qh'), Card.create('2h')
-    ))
-    t.assert(!Helpers.cardEquals(
-        Card.create('Qh'), Card.create('2c')
-    ))
-})
-
-
-test('TestHelpers.handEquals', function(t) {
     t.plan(2)
 
     t.assert(Helpers.handEquals(

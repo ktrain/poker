@@ -5,7 +5,7 @@ const test = require('tape')
 const { Suit, Rank, Card } = require('@lib/card')
 
 
-test('card creation', function(t) {
+test('Card.create()', function(t) {
     let card
 
     // array args
@@ -23,7 +23,8 @@ test('card creation', function(t) {
     t.end()
 })
 
-test('card comparison', function(t) {
+test('Card comparison', function(t) {
+
     t.test('gt', function(st) {
         st.plan(5)
         st.assert(Card.create('5c') > Card.create('3s'))
@@ -32,6 +33,7 @@ test('card comparison', function(t) {
         st.assert(Card.create('Ks') > Card.create('Jh'))
         st.assert(Card.create('Ah') > Card.create('2s'))
     })
+
     t.test('lt', function(st) {
         st.plan(5)
         st.assert(Card.create('2c') < Card.create('Ad'))
@@ -40,9 +42,27 @@ test('card comparison', function(t) {
         st.assert(Card.create('5s') < Card.create('8c'))
         st.assert(Card.create('2c') < Card.create('3d'))
     })
+
+    t.test('Card.same()', function(st) {
+        st.plan(4)
+
+        st.assert(
+            Card.same(Card.create('Qh'), Card.create('Qh'))
+        )
+        st.assert(
+            !Card.same(Card.create('Qh'), Card.create('Qc'))
+        )
+        st.assert(
+            !Card.same(Card.create('Qh'), Card.create('2h'))
+        )
+        st.assert(
+            !Card.same(Card.create('Qh'), Card.create('2c'))
+        )
+    })
+
 })
 
-test('card sorting', function(t) {
+test('Card.sort()', function(t) {
     t.plan(1)
     let cards, ranks
 

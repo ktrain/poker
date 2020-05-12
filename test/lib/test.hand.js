@@ -101,7 +101,7 @@ test('Hand.fill()', function(t) {
 })
 
 test('Hand.getStraightFlush()', function(t) {
-    t.plan(12)
+    t.plan(14)
     let input, output, expectedOutput
 
     input = Hand.create(['Ac', 'Kc', 'Qc', 'Jc', 'Tc', '4s', '2d'])
@@ -139,6 +139,15 @@ test('Hand.getStraightFlush()', function(t) {
     expectedOutput = Hand.create(['5c', '4c', '3c', '2c', 'Ac'])
     t.assert(Helpers.sameHand(output, expectedOutput), '5-high straight flush')
 
+    input = Hand.create(['Ac', 'Ks', '9d', '5c', '4c', '3c', '2c'])
+    output = Hand.getStraightFlush(input, Hand.Defaults.HAND_SIZE, true)
+    t.equal(output, null, '5-high straight flush with aceHighOnly=true')
+
+    input = Hand.create(['Ac', 'Kc', 'Qc', 'Jc', 'Tc', '8h', '5s'])
+    output = Hand.getStraightFlush(input, Hand.Defaults.HAND_SIZE, true)
+    expectedOutput = Hand.create(['Ac', 'Kc', 'Qc', 'Jc', 'Tc'])
+    t.assert(Helpers.sameHand(output, expectedOutput), 'Royal flush with aceHighOnly=true')
+
     input = Hand.create(['As', 'Ac', 'Ad', '5c', '4c', '3c', '2c'])
     output = Hand.getStraightFlush(input)
     expectedOutput = Hand.create(['5c', '4c', '3c', '2c', 'Ac'])
@@ -170,7 +179,7 @@ test('Hand.getFourOfAKind()', function(t) {
     expectedOutput = Hand.create(['8s', '8h', '8d', '8c', 'Ks'])
     t.assert(Helpers.sameHand(output, expectedOutput), 'four of a kind')
 
-    input = Hand.create(['8s', '8c', '8h', '8d', '9d', '9d', '9s'])
+    input = Hand.create(['8s', '8c', '8h', '8d', '9d', '9h', '9s'])
     output = Hand.getFourOfAKind(input)
     expectedOutput = Hand.create(['8s', '8h', '8d', '8c', '9s'])
     t.assert(Helpers.sameHand(output, expectedOutput), 'four of a kind with three of a kind present')
@@ -181,36 +190,52 @@ test('Hand.getFourOfAKind()', function(t) {
 })
 
 test('Hand.getFullHouse()', function(t) {
-    t.end()
+    t.plan(4)
+    let input, output, expectedOutput
+
+    input = Hand.create(['Kd', '8d', '8h', '8c', '7h', '6d', '6h'])
+    output = Hand.getFullHouse(input)
+    expectedOutput = Hand.create(['8h', '8d', '8c', '6h', '6d'])
+    t.assert(Helpers.sameHand(output, expectedOutput), 'full house')
+
+    input = Hand.create(['9c', '9d', '8d', '8h', '8c', '6d', '6h'])
+    output = Hand.getFullHouse(input)
+    expectedOutput = Hand.create(['8h', '8d', '8c', '9d', '9c'])
+    t.assert(Helpers.sameHand(output, expectedOutput), 'full house with two pairs present')
+
+    input = Hand.create(['8s', '8c', '8h', '8d', '9d', '9h', '9s'])
+    output = Hand.getFullHouse(input)
+    t.equal(output, null, 'three of a kind and four of a kind present')
+
+    input = Hand.create(['Ks', 'Kc', '8c', '8s', '6d', '4s', '2d'])
+    output = Hand.getFullHouse(input)
+    t.equal(output, null, 'no full house')
 })
 
 test('Hand.getFlush()', function(t) {
     t.plan(3)
     let input, output, expectedOutput
 
-    // 5-card flush
     input = Hand.create(['Tc', 'Jc', 'Qc', 'Kc', 'Ac'])
     output = Hand.getFlush(input)
     expectedOutput = Hand.create(['Ac', 'Kc', 'Qc', 'Jc', 'Tc'])
     t.assert(Helpers.sameHand(output, expectedOutput), '5-card flush')
 
-    // 6-card flush; should take the 5 highest cards
     input = Hand.create(['9c', '4h', 'Tc', 'Jc', 'Qc', 'Kc', 'Ac'])
     output = Hand.getFlush(input)
     expectedOutput = Hand.create(['Ac', 'Kc', 'Qc', 'Jc', 'Tc'])
     t.assert(Helpers.sameHand(output, expectedOutput), '6-card flush')
 
-    // no flush
     input = Hand.create(['2c', 'Tc', 'Jc', 'Qc', 'Kh', 'Ah', 'Th'])
     output = Hand.getFlush(input)
     t.equal(output, null, 'no flush')
 })
 
 test('Hand.getStraight()', function(t) {
-    t.plan(6)
+    t.plan(8)
     let input, output, expectedOutput
 
-    input = Hand.create(['Tc', 'Jd', 'Qh', 'Ks', 'Ac'])
+    input = Hand.create(['Tc', 'Jd', 'Qh', 'Ks', 'Ac', '8c', '4d'])
     output = Hand.getStraight(input)
     expectedOutput = Hand.create(['Ac', 'Ks', 'Qh', 'Jd', 'Tc'])
     t.assert(Helpers.sameHand(output, expectedOutput), '5-card straight')
@@ -229,6 +254,15 @@ test('Hand.getStraight()', function(t) {
     output = Hand.getStraight(input)
     expectedOutput = Hand.create(['5d', '4c', '3s', '2h', 'Ad'])
     t.assert(Helpers.sameHand(output, expectedOutput), '5-high straight')
+
+    input = Hand.create(['Ks', 'Tc', 'Ad', '2h', '3s', '4c', '5d'])
+    output = Hand.getStraight(input, Hand.Defaults.HAND_SIZE, true)
+    t.equal(output, null, '5-high straight with `aceHighOnly=true')
+
+    input = Hand.create(['Ks', 'Tc', 'Ad', 'Qh', '3s', 'Jc', '5d'])
+    output = Hand.getStraight(input, Hand.Defaults.HAND_SIZE, true)
+    expectedOutput = Hand.create(['Ad', 'Ks', 'Qh', 'Jc', 'Tc'])
+    t.assert(Helpers.sameHand(output, expectedOutput), 'A-high straight with `aceHighOnly=true')
 
     input = Hand.create(['Ks', 'Ac', '2d', '3h', '4s'])
     output = Hand.getStraight(input)

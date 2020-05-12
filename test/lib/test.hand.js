@@ -161,7 +161,7 @@ test('Hand.getThreeOfAKind()', function(t) {
 
     input = Hand.create(['8s', '8c', '8h', '9c', '4s', '9d', '9s'])
     output = Hand.getThreeOfAKind(input)
-    expectedOutput = Hand.create(['9s', '9d', '9c', '8s', '8c'])
+    expectedOutput = Hand.create(['9s', '9d', '9c', '8s', '8h'])
     t.assert(Helpers.sameHand(output, expectedOutput), 'greater three of a kind')
 
     input = Hand.create(['9s', '9c', '9h', '9d', '8s', '6d', '4s'])
@@ -171,6 +171,34 @@ test('Hand.getThreeOfAKind()', function(t) {
     input = Hand.create(['Ks', 'Qc', 'Jh', '8c', '8s', '6d', '4s'])
     output = Hand.getThreeOfAKind(input)
     t.equal(output, null, 'no three of a kind')
+})
+
+test('Hand.getTwoPair()', function(t) {
+    t.plan(5)
+    let input, output, expectedOutput
+
+    input = Hand.create(['Ks', 'Tc', 'Th', '8c', '8s', '6d', '4s'])
+    output = Hand.getTwoPair(input)
+    expectedOutput = Hand.create(['Th', 'Tc', '8s', '8c', 'Ks'])
+    t.assert(Helpers.sameHand(output, expectedOutput), 'two pair')
+
+    input = Hand.create(['8s', '8c', 'Kh', 'Kc', 'Js', 'Jd', '5s'])
+    output = Hand.getTwoPair(input)
+    expectedOutput = Hand.create(['Kh', 'Kc', 'Js', 'Jd', '8s'])
+    t.assert(Helpers.sameHand(output, expectedOutput), 'three pairs')
+
+    input = Hand.create(['8s', '9s', '8h', '9c', 'Ts', 'Td', 'Th'])
+    output = Hand.getTwoPair(input)
+    expectedOutput = Hand.create(['9s', '9c', '8s', '8h', 'Ts'])
+    t.assert(Helpers.sameHand(output, expectedOutput), 'two pair amongst three of a kind')
+
+    input = Hand.create(['9s', '9c', '9h', '8s', '7s', '5d', '4s'])
+    output = Hand.getTwoPair(input)
+    t.equal(output, null, 'no pairs, but three of a kind')
+
+    input = Hand.create(['Ks', 'Qc', 'Jh', '9c', '8s', '6d', '4s'])
+    output = Hand.getTwoPair(input)
+    t.equal(output, null, 'no pairs')
 })
 
 test('Hand.getPair()', function(t) {

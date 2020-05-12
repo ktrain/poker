@@ -7,6 +7,7 @@ const Hand = require('@lib/hand')
 
 const TestHelpers = {
     sameHand: (handA, handB, sort=true) => {
+        if (!handA || !handB) return false
         if (sort) {
             handA = Hand.sort(_.clone(handA))
             handB = Hand.sort(_.clone(handB))

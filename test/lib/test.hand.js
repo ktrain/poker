@@ -97,7 +97,76 @@ test('Hand.fill()', function(t) {
     input = Hand.create([])
     output = Hand.fill(input, Hand.create(['Ac', 'Td', '9h', '8c', '4s', '3h', '2c']))
     expectedOutput = Hand.create(['Ac', 'Td', '9h', '8c', '4s'])
-    t.assert(Helpers.sameHand(output, expectedOutput))
+    t.assert(Helpers.sameHand(output, expectedOutput), 'Fill 5 cards')
+})
+
+test('Hand.getStraightFlush()', function(t) {
+    t.plan(12)
+    let input, output, expectedOutput
+
+    input = Hand.create(['Ac', 'Kc', 'Qc', 'Jc', 'Tc', '4s', '2d'])
+    output = Hand.getStraightFlush(input)
+    expectedOutput = Hand.create(['Ac', 'Kc', 'Qc', 'Jc', 'Tc'])
+    t.assert(Helpers.sameHand(output, expectedOutput), 'Royal flush')
+
+    input = Hand.create(['As', 'Tc', '9c', '8c', '7c', '6c', '4d'])
+    output = Hand.getStraightFlush(input)
+    expectedOutput = Hand.create(['Tc', '9c', '8c', '7c', '6c'])
+    t.assert(Helpers.sameHand(output, expectedOutput), 'Straight flush')
+
+    input = Hand.create(['Kd', 'Qd', 'Js', 'Jd', 'Td', '9d', '9c'])
+    output = Hand.getStraightFlush(input)
+    expectedOutput = Hand.create(['Kd', 'Qd', 'Jd', 'Td', '9d'])
+    t.assert(Helpers.sameHand(output, expectedOutput), 'Straight flush with pairs present')
+
+    input = Hand.create(['As', 'Kc', 'Qc', 'Jc', 'Tc', '9c', '8c'])
+    output = Hand.getStraightFlush(input)
+    expectedOutput = Hand.create(['Kc', 'Qc', 'Jc', 'Tc', '9c'])
+    t.assert(Helpers.sameHand(output, expectedOutput), '6-card straight flush')
+
+    input = Hand.create(['Ac', 'Kd', 'Jc', 'Tc', '9c', '8c', '7c'])
+    output = Hand.getStraightFlush(input)
+    expectedOutput = Hand.create(['Jc', 'Tc', '9c', '8c', '7c'])
+    t.assert(Helpers.sameHand(output, expectedOutput), 'Higher flush than the straight flush')
+
+    input = Hand.create(['Ah', 'Qc', 'Jc', 'Tc', '9c', '8c', '5d'])
+    output = Hand.getStraightFlush(input)
+    expectedOutput = Hand.create(['Qc', 'Jc', 'Tc', '9c', '8c'])
+    t.assert(Helpers.sameHand(output, expectedOutput), 'Higher straight than the straight flush')
+
+    input = Hand.create(['Ac', 'Ks', '9d', '5c', '4c', '3c', '2c'])
+    output = Hand.getStraightFlush(input)
+    expectedOutput = Hand.create(['5c', '4c', '3c', '2c', 'Ac'])
+    t.assert(Helpers.sameHand(output, expectedOutput), '5-high straight flush')
+
+    input = Hand.create(['As', 'Ac', 'Ad', '5c', '4c', '3c', '2c'])
+    output = Hand.getStraightFlush(input)
+    expectedOutput = Hand.create(['5c', '4c', '3c', '2c', 'Ac'])
+    t.assert(Helpers.sameHand(output, expectedOutput), '5-high straight flush, multiple aces')
+
+    input = Hand.create(['Ac', 'Kc', 'Qc', 'Jd', 'Tc', '7h', '2h'])
+    output = Hand.getStraightFlush(input)
+    t.equal(output, null, 'Separate straight and flush')
+
+    input = Hand.create(['Ac', '8c', '7c', '6c', '5s', '3c', '2c'])
+    output = Hand.getStraightFlush(input)
+    t.equal(output, null, 'Flush only')
+
+    input = Hand.create(['As', 'Jd', '8h', '7c', '6c', '5c', '4c', '2c'])
+    output = Hand.getStraightFlush(input)
+    t.equal(output, null, 'Straight only')
+
+    input = Hand.create(['Ac', 'Kc', 'Qd', 'Jc', 'Js', '9c', '9h'])
+    output = Hand.getStraightFlush(input)
+    t.equal(output, null, 'No straight flush, flush, nor straight')
+})
+
+test('Hand.getFourOfAKind()', function(t) {
+    t.end()
+})
+
+test('Hand.getFullHouse()', function(t) {
+    t.end()
 })
 
 test('Hand.getFlush()', function(t) {
@@ -123,33 +192,33 @@ test('Hand.getFlush()', function(t) {
 })
 
 test('Hand.getStraight()', function(t) {
-    t.plan(5)
+    t.plan(6)
     let input, output, expectedOutput
 
-    // 5-card straight
     input = Hand.create(['Tc', 'Jd', 'Qh', 'Ks', 'Ac'])
     output = Hand.getStraight(input)
     expectedOutput = Hand.create(['Ac', 'Ks', 'Qh', 'Jd', 'Tc'])
     t.assert(Helpers.sameHand(output, expectedOutput), '5-card straight')
 
-    // 6-card straight; should take the 5 highest cards
+    input = Hand.create(['Tc', 'Jd', 'Qs', 'Qh', 'Ks', 'Ac', 'Ts'])
+    output = Hand.getStraight(input)
+    expectedOutput = Hand.create(['Ac', 'Ks', 'Qs', 'Jd', 'Ts'])
+    t.assert(Helpers.sameHand(output, expectedOutput), '5-card straight with pairs present')
+
     input = Hand.create(['4s', '5c', '6d', '7h', '8s', '9c'])
     output = Hand.getStraight(input)
     expectedOutput = Hand.create(['9c', '8s', '7h', '6d', '5c'])
     t.assert(Helpers.sameHand(output, expectedOutput), '6-card straight')
 
-    // 5-high straight
     input = Hand.create(['Ks', 'Tc', 'Ad', '2h', '3s', '4c', '5d'])
     output = Hand.getStraight(input)
     expectedOutput = Hand.create(['5d', '4c', '3s', '2h', 'Ad'])
     t.assert(Helpers.sameHand(output, expectedOutput), '5-high straight')
 
-    // no 4-high straight
     input = Hand.create(['Ks', 'Ac', '2d', '3h', '4s'])
     output = Hand.getStraight(input)
-    t.equal(output, null, 'no 4-high straight')
+    t.equal(output, null, 'no 4-high straight allowed')
 
-    // no straight
     input = Hand.create(['2s', '3c', '4d', '5h', '7s', '9c', '8d'])
     output = Hand.getStraight(input)
     t.equal(output, null, 'no straight')

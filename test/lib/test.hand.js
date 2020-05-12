@@ -149,3 +149,27 @@ test('Hand.getStraight()', function(t) {
     output = Hand.getStraight(input)
     t.equal(output, null, 'no straight')
 })
+
+test('Hand.getThreeOfAKind()', function(t) {
+    t.plan(4)
+    let input, output, expectedOutput
+
+    input = Hand.create(['Ks', 'Tc', '8h', '8c', '8s', '6d', '4s'])
+    output = Hand.getThreeOfAKind(input)
+    expectedOutput = Hand.create(['8h', '8c', '8s', 'Ks', 'Tc'])
+    t.assert(Helpers.sameHand(output, expectedOutput), 'three of a kind')
+
+    input = Hand.create(['8s', '8c', '8h', '9c', '4s', '9d', '9s'])
+    output = Hand.getThreeOfAKind(input)
+    expectedOutput = Hand.create(['9s', '9d', '9c', '8s', '8c'])
+    debugger
+    t.assert(Helpers.sameHand(output, expectedOutput), 'greater three of a kind')
+
+    input = Hand.create(['9s', '9c', '9h', '9d', '8s', '6d', '4s'])
+    output = Hand.getThreeOfAKind(input)
+    t.equal(output, null, 'no three of a kind, but four')
+
+    input = Hand.create(['Ks', 'Qc', 'Jh', '8c', '8s', '6d', '4s'])
+    output = Hand.getThreeOfAKind(input)
+    t.equal(output, null, 'no three of a kind')
+})

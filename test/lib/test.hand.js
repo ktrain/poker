@@ -162,7 +162,22 @@ test('Hand.getStraightFlush()', function(t) {
 })
 
 test('Hand.getFourOfAKind()', function(t) {
-    t.end()
+    t.plan(3)
+    let input, output, expectedOutput
+
+    input = Hand.create(['Ks', '8d', '8h', '8c', '8s', '6d', '4s'])
+    output = Hand.getFourOfAKind(input)
+    expectedOutput = Hand.create(['8s', '8h', '8d', '8c', 'Ks'])
+    t.assert(Helpers.sameHand(output, expectedOutput), 'four of a kind')
+
+    input = Hand.create(['8s', '8c', '8h', '8d', '9d', '9d', '9s'])
+    output = Hand.getFourOfAKind(input)
+    expectedOutput = Hand.create(['8s', '8h', '8d', '8c', '9s'])
+    t.assert(Helpers.sameHand(output, expectedOutput), 'four of a kind with three of a kind present')
+
+    input = Hand.create(['Ks', 'Qc', 'Jh', '8c', '8s', '6d', '4s'])
+    output = Hand.getFourOfAKind(input)
+    t.equal(output, null, 'No four of a kind')
 })
 
 test('Hand.getFullHouse()', function(t) {

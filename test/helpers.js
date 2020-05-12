@@ -5,7 +5,7 @@ const { Card } = require('@lib/card')
 
 
 const TestHelpers = {
-    handEquals: (handA, handB) => {
+    sameHand: (handA, handB) => {
         return _.reduce(handA, (result, card, index) => {
             return result && Card.same(card, handB[index])
         }, true)

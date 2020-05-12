@@ -1,4 +1,5 @@
 require('../init')
+const _ = require('lodash')
 const test = require('tape')
 
 const Helpers = require('@test/helpers')
@@ -49,6 +50,36 @@ test('Hand.getMostCommonRank()', function(t) {
     t.assert(Rank.same(output, expectedOutput), 'Pick the highest in a hand with unique ranks')
 })
 
+test('Hand.fill()', function(t) {
+    t.plan(5)
+    let input, output, expectedOutput
+
+    input = Hand.create(['Ac', 'Ad', 'Ah', 'Qs', 'Qc'])
+    output = Hand.fill(input, Hand.create(['Ac', 'Ad', 'Ah', 'Ks', 'Qs', 'Qc', '2h']))
+    expectedOutput = Hand.create(['Ac', 'Ad', 'Ah', 'Qs', 'Qc'])
+    t.assert(Helpers.sameHand(output, expectedOutput), 'Already have full hand')
+
+    input = Hand.create(['Ac', 'Ad', 'Ah', 'As'])
+    output = Hand.fill(input, Hand.create(['Ac', 'Ad', 'Ah', 'As', 'Ks', 'Qc', '2h']))
+    expectedOutput = Hand.create(['Ac', 'Ad', 'Ah', 'As', 'Ks'])
+    t.assert(Helpers.sameHand(output, expectedOutput))
+
+    input = Hand.create(['Th', 'Ts', 'Td'])
+    output = Hand.fill(input, Hand.create(['Ks', 'Qs', 'Th', 'Ts', 'Td', '7c', '2h']))
+    expectedOutput = Hand.create(['Th', 'Ts', 'Td', 'Ks', 'Qs'])
+    t.assert(Helpers.sameHand(output, expectedOutput))
+
+    input = Hand.create(['2h', '2c'])
+    output = Hand.fill(input, Hand.create(['Ac', 'Td', '9h', '8c', '4s', '2h', '2c']))
+    expectedOutput = Hand.create(['2h', '2c', 'Ac', 'Td', '9h'])
+    t.assert(Helpers.sameHand(output, expectedOutput))
+
+    input = Hand.create([])
+    output = Hand.fill(input, Hand.create(['Ac', 'Td', '9h', '8c', '4s', '3h', '2c']))
+    expectedOutput = Hand.create(['Ac', 'Td', '9h', '8c', '4s'])
+    t.assert(Helpers.sameHand(output, expectedOutput))
+})
+
 test('Hand.getFlush()', function(t) {
     t.plan(3)
     let input, output, expectedOutput
@@ -57,13 +88,13 @@ test('Hand.getFlush()', function(t) {
     input = Hand.create(['Tc', 'Jc', 'Qc', 'Kc', 'Ac'])
     output = Hand.getFlush(input)
     expectedOutput = Hand.create(['Ac', 'Kc', 'Qc', 'Jc', 'Tc'])
-    t.assert(Helpers.handEquals(output, expectedOutput), '5-card flush')
+    t.assert(Helpers.sameHand(output, expectedOutput), '5-card flush')
 
     // 6-card flush; should take the 5 highest cards
     input = Hand.create(['9c', '4h', 'Tc', 'Jc', 'Qc', 'Kc', 'Ac'])
     output = Hand.getFlush(input)
     expectedOutput = Hand.create(['Ac', 'Kc', 'Qc', 'Jc', 'Tc'])
-    t.assert(Helpers.handEquals(output, expectedOutput), '6-card flush')
+    t.assert(Helpers.sameHand(output, expectedOutput), '6-card flush')
 
     // no flush
     input = Hand.create(['2c', 'Tc', 'Jc', 'Qc', 'Kh', 'Ah', 'Th'])
@@ -79,19 +110,19 @@ test('Hand.getStraight()', function(t) {
     input = Hand.create(['Tc', 'Jd', 'Qh', 'Ks', 'Ac'])
     output = Hand.getStraight(input)
     expectedOutput = Hand.create(['Ac', 'Ks', 'Qh', 'Jd', 'Tc'])
-    t.assert(Helpers.handEquals(output, expectedOutput), '5-card straight')
+    t.assert(Helpers.sameHand(output, expectedOutput), '5-card straight')
 
     // 6-card straight; should take the 5 highest cards
     input = Hand.create(['4s', '5c', '6d', '7h', '8s', '9c'])
     output = Hand.getStraight(input)
     expectedOutput = Hand.create(['9c', '8s', '7h', '6d', '5c'])
-    t.assert(Helpers.handEquals(output, expectedOutput), '6-card straight')
+    t.assert(Helpers.sameHand(output, expectedOutput), '6-card straight')
 
     // 5-high straight
     input = Hand.create(['Ks', 'Tc', 'Ad', '2h', '3s', '4c', '5d'])
     output = Hand.getStraight(input)
     expectedOutput = Hand.create(['5d', '4c', '3s', '2h', 'Ad'])
-    t.assert(Helpers.handEquals(output, expectedOutput), '5-high straight')
+    t.assert(Helpers.sameHand(output, expectedOutput), '5-high straight')
 
     // no 4-high straight
     input = Hand.create(['Ks', 'Ac', '2d', '3h', '4s'])
